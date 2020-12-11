@@ -28,7 +28,7 @@ var c = gredis.NewClient(&gredis.Options{
 })
 
 func TestKeys(t *testing.T) {
-	if _, err := c.ScanIter("*", 1000); err != nil {
+	if _, err := c.ScanIter("*", 1000).Result(); err != nil {
 		t.Errorf("redis keys cmd err: %s", err.Error())
 	}
 }
@@ -85,7 +85,7 @@ func TestHMset(t *testing.T) {
 
 func TestZAddRemByRank(t *testing.T) {
 	key := "test_zadd"
-	length := 10
+	length := int64(10)
 	var members []gredis.Z
 	for i := 0; i < 20; i++ {
 		member := gredis.Z{
@@ -97,7 +97,7 @@ func TestZAddRemByRank(t *testing.T) {
 	if _, err := c.ZAddRemByRank(key, length, members...).Result(); err != nil {
 		t.Errorf("redis ZAddRemByRank cmd err: %s", err.Error())
 	}
-	if ret, err := c.ZCard(key).Result(); ret != int64(length) {
+	if ret, err := c.ZCard(key).Result(); ret != length {
 		t.Errorf(`c.ZCard("%s").Result() == (%d, %v), want (%d, nil)`, key, ret, err, length)
 	}
 	if ret, err := c.ZScore(key, "10").Result(); err == nil {
@@ -111,8 +111,8 @@ func TestZAddRemByRank(t *testing.T) {
 
 func TestPushTrim(t *testing.T) {
 	lpushKey := "test_list1"
-	length := 10
-	num := 20
+	var length int64 = 10
+	var num int64 = 20
 	var list = make([]interface{}, num)
 	for i, _ := range list {
 		list[i] = i
@@ -121,28 +121,32 @@ func TestPushTrim(t *testing.T) {
 	if _, err := c.LPushTrim(lpushKey, length, list...).Result(); err != nil {
 		t.Errorf("redis LPushTrim cmd err: %s", err.Error())
 	}
-	if ret, err := c.LLen(lpushKey).Result(); ret != int64(length) {
+	if ret, err := c.LLen(lpushKey).Result(); ret != length {
 		t.Errorf(`c.LPushTrim("%s").Result() == (%d, %v), want (%d, nil)`, lpushKey, ret, err.Error(), length)
 	}
-	if ret, err := c.LIndex(lpushKey, 0).Result(); ret != strconv.Itoa(num-1) {
-		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, num-1)
+	expectRet := int(num - 1)
+	if ret, err := c.LIndex(lpushKey, 0).Result(); ret != strconv.Itoa(expectRet) {
+		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, expectRet)
 	}
-	if ret, err := c.LIndex(lpushKey, int64(length-1)).Result(); ret != strconv.Itoa(num-length) {
-		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, num-length)
+	expectRet = int(num - length)
+	if ret, err := c.LIndex(lpushKey, length-1).Result(); ret != strconv.Itoa(expectRet) {
+		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, expectRet)
 	}
 	rpushKey := "test_list2"
 	// 测试rpushtrim
 	if _, err := c.RPushTrim(rpushKey, length, list...).Result(); err != nil {
 		t.Errorf("redis RPushTrim cmd err: %s", err.Error())
 	}
-	if ret, err := c.LLen(rpushKey).Result(); ret != int64(length) {
+	if ret, err := c.LLen(rpushKey).Result(); ret != length {
 		t.Errorf(`c.RPushTrim("%s").Result() == (%d, %v), want (%d, nil)`, lpushKey, ret, err.Error(), length)
 	}
-	if ret, err := c.LIndex(rpushKey, 0).Result(); ret != strconv.Itoa(num-length) {
-		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, num-length)
+	expectRet = int(num - length)
+	if ret, err := c.LIndex(rpushKey, 0).Result(); ret != strconv.Itoa(expectRet) {
+		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, expectRet)
 	}
-	if ret, err := c.LIndex(rpushKey, int64(length-1)).Result(); ret != strconv.Itoa(num-1) {
-		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, num-1)
+	expectRet = int(num - 1)
+	if ret, err := c.LIndex(rpushKey, int64(length-1)).Result(); ret != strconv.Itoa(expectRet) {
+		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, expectRet)
 	}
 	c.Expire(lpushKey, ex)
 	c.Expire(rpushKey, ex)

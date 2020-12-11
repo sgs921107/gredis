@@ -28,61 +28,57 @@ type ClusterClient struct {
 }
 
 // keys
-func (c *ClusterClient) ScanIter(pattern string, count int64) (keys []string, err error) {
+func (c *ClusterClient) ScanIter(pattern string, count int64) *ScansCmd {
+	scansCmd := NewScansCmd()
 	cursor := uint64(0)
 	for {
-		page, cursor, err := c.Scan(cursor, pattern, count).Result()
-		if err != nil {
-			return keys, err
-		}
-		keys = append(keys, page...)
-		if cursor == 0 {
-			return keys, nil
+		scanCmd := c.Scan(cursor, pattern, count)
+		scansCmd.addScanCmd(scanCmd)
+		_, cursor, err := scanCmd.Result()
+		if err != nil || cursor == 0 {
+			return scansCmd
 		}
 	}
 }
 
 // 查找集合元素
-func (c *ClusterClient) SScanIter(key, match string, count int64) (members []string, err error) {
+func (c *ClusterClient) SScanIter(key, match string, count int64) *ScansCmd {
+	scansCmd := NewScansCmd()
 	cursor := uint64(0)
 	for {
-		page, cursor, err := c.SScan(key, cursor, match, count).Result()
-		if err != nil {
-			return members, err
-		}
-		members = append(members, page...)
-		if cursor == 0 {
-			return members, nil
+		scanCmd := c.SScan(key, cursor, match, count)
+		scansCmd.addScanCmd(scanCmd)
+		_, cursor, err := scanCmd.Result()
+		if err != nil || cursor == 0 {
+			return scansCmd
 		}
 	}
 }
 
 // 查找zset中的元素
-func (c *ClusterClient) ZScanIter(key, match string, count int64) (members []string, err error) {
-	corsur := uint64(0)
+func (c *ClusterClient) ZScanIter(key, match string, count int64) *ScansCmd {
+	scansCmd := NewScansCmd()
+	cursor := uint64(0)
 	for {
-		page, cursor, err := c.ZScan(key, corsur, match, count).Result()
-		if err != nil {
-			return members, err
-		}
-		members = append(members, page...)
-		if cursor == 0 {
-			return members, nil
+		scanCmd := c.ZScan(key, cursor, match, count)
+		scansCmd.addScanCmd(scanCmd)
+		_, cursor, err := scanCmd.Result()
+		if err != nil || cursor == 0 {
+			return scansCmd
 		}
 	}
 }
 
 // 查找hash中的元素
-func (c *ClusterClient) HScanIter(key, match string, count int64) (members []string, err error) {
+func (c *ClusterClient) HScanIter(key, match string, count int64) *ScansCmd {
+	scansCmd := NewScansCmd()
 	cursor := uint64(0)
 	for {
-		page, cursor, err := c.HScan(key, cursor, match, count).Result()
-		if err != nil {
-			return members, err
-		}
-		members = append(members, page...)
-		if cursor == 0 {
-			return members, nil
+		scanCmd := c.HScan(key, cursor, match, count)
+		scansCmd.addScanCmd(scanCmd)
+		_, cursor, err := scanCmd.Result()
+		if err != nil || cursor == 0 {
+			return scansCmd
 		}
 	}
 }
@@ -110,7 +106,7 @@ func (c *ClusterClient) HMSet(key string, fields map[string]interface{}, expirat
 /*
 向zset中插入成员并剪切，并截取只保留分数最高的length个成员
 */
-func (c *ClusterClient) ZAddRemByRank(key string, length int, members ...Z) *Cmd {
+func (c *ClusterClient) ZAddRemByRank(key string, length int64, members ...Z) *Cmd {
 	keys := []string{key}
 	args := []interface{}{0, -(length + 1)}
 	for _, member := range members {
@@ -122,7 +118,7 @@ func (c *ClusterClient) ZAddRemByRank(key string, length int, members ...Z) *Cmd
 /*
 从左边向list插入元素，并截取只保留左起length个元素
 */
-func (c *ClusterClient) LPushTrim(key string, length int, values ...interface{}) *Cmd {
+func (c *ClusterClient) LPushTrim(key string, length int64, values ...interface{}) *Cmd {
 	keys := []string{key}
 	args := []interface{}{0, length - 1}
 	args = append(args, values...)
@@ -132,7 +128,7 @@ func (c *ClusterClient) LPushTrim(key string, length int, values ...interface{})
 /*
 从右边向list插入元素，并截取只保留右起length个元素
 */
-func (c *ClusterClient) RPushTrim(key string, length int, values ...interface{}) *Cmd {
+func (c *ClusterClient) RPushTrim(key string, length int64, values ...interface{}) *Cmd {
 	keys := []string{key}
 	args := []interface{}{-length, -1}
 	args = append(args, values...)
