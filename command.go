@@ -30,6 +30,13 @@ func (c *ScansCmd) Result() (keys []string, err error) {
 	return keys, err
 }
 
+func (c *ScansCmd) String() (strSlice []string) {
+	for _, scanCmd := range c.scanCmds {
+		strSlice = append(strSlice, scanCmd.String())
+	}
+	return strSlice
+}
+
 func (c *ScansCmd) addScanCmd(scanCmd *ScanCmd) {
 	c.scanCmds = append(c.scanCmds, scanCmd)
 }
