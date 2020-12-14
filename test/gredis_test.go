@@ -8,6 +8,7 @@
 package main
 
 import (
+	"github.com/go-redis/redis"
 	"github.com/sgs921107/gredis"
 	"strconv"
 	"testing"
@@ -26,6 +27,23 @@ var c = gredis.NewClient(&gredis.Options{
 	DB:       db,
 	Password: password,
 })
+
+func TestClientFromRedisClient(t *testing.T) {
+	c := redis.NewClient(&redis.Options{
+		Addr:     addr,
+		DB:       db,
+		Password: password,
+	})
+	gc := gredis.NewClientFromRedisClient(c)
+	key := "test_gc"
+	val := "hello"
+	if _, err := gc.Set(key, val, ex).Result(); err != nil {
+		t.Errorf("redis set cmd err: %s", err.Error())
+	}
+	if ret, err := gc.Get(key).Result(); ret != val {
+		t.Errorf(`c.Get("%s").Result() == ("%v", %v), want ("%v", nil)`, key, ret, err, val)
+	}
+}
 
 func TestKeys(t *testing.T) {
 	if _, err := c.ScanIter("*", 1000).Result(); err != nil {

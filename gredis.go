@@ -139,8 +139,20 @@ func (c *Client) RPushTrim(key string, length int64, values ...interface{}) *Cmd
 	return c.Eval(rpushTrimScript, keys, args...)
 }
 
+/*
+通过配置生成客户端
+*/
 func NewClient(opt *Options) *Client {
 	return &Client{
 		RedisClient: *redis.NewClient(opt),
+	}
+}
+
+/*
+通过reids客户端实例生成客户端
+*/
+func NewClientFromRedisClient(client *RedisClient) *Client {
+	return &Client{
+		RedisClient: *client,
 	}
 }

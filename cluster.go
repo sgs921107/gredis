@@ -140,3 +140,12 @@ func NewClusterClient(opt *ClusterOptions) *ClusterClient {
 		RedisClusterClient: *redis.NewClusterClient(opt),
 	}
 }
+
+/*
+通过reids客户端实例生成客户端
+*/
+func NewClusterClientFromRedisClient(client *RedisClusterClient) *ClusterClient {
+	return &ClusterClient{
+		RedisClusterClient: *client,
+	}
+}
