@@ -1,0 +1,38 @@
+# github.com/go-redis/redis v6.15.9+incompatible
+## explicit
+github.com/go-redis/redis
+github.com/go-redis/redis/internal
+github.com/go-redis/redis/internal/consistenthash
+github.com/go-redis/redis/internal/hashtag
+github.com/go-redis/redis/internal/pool
+github.com/go-redis/redis/internal/proto
+github.com/go-redis/redis/internal/util
+# github.com/golang/protobuf v1.4.3
+## explicit
+# github.com/google/go-cmp v0.5.4
+## explicit
+# github.com/kr/text v0.2.0
+## explicit
+# github.com/nxadm/tail v1.4.5
+## explicit
+# github.com/onsi/ginkgo v1.14.2
+## explicit
+# github.com/onsi/gomega v1.10.4
+## explicit
+# github.com/sgs921107/gcommon v0.0.0-20201216112724-e721c87dfb4d
+## explicit
+github.com/sgs921107/gcommon
+# golang.org/x/net v0.0.0-20201216054612-986b41b23924
+## explicit
+# golang.org/x/sys v0.0.0-20201214210602-f9fddec55a1e
+## explicit
+# golang.org/x/text v0.3.4
+## explicit
+# golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
+## explicit
+# google.golang.org/protobuf v1.25.0
+## explicit
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit
+# gopkg.in/yaml.v2 v2.4.0
+## explicit
