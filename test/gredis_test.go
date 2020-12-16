@@ -66,7 +66,7 @@ func TestHSet(t *testing.T) {
 	key := "test_hash1"
 	field := "hello"
 	val := "go"
-	if _, err := c.HSet(key, field, val, ex).Result(); err != nil {
+	if _, err := c.HSetEX(key, field, val, ex).Result(); err != nil {
 		t.Errorf("redis hset cmd err: %s", err.Error())
 	}
 	if ret, err := c.HGet(key, field).Result(); ret != val {
@@ -84,7 +84,7 @@ func TestHMset(t *testing.T) {
 		"age":  18,
 		"sex":  nil,
 	}
-	if _, err := c.HMSet(key, fields, ex).Result(); err != nil {
+	if _, err := c.HMSetEX(key, fields, ex).Result(); err != nil {
 		t.Errorf("redis hmset cmd err: %s", err.Error())
 	}
 	if ret, err := c.HGet(key, "name").Result(); ret != "tom" {
@@ -132,7 +132,7 @@ func TestPushTrim(t *testing.T) {
 	var length int64 = 10
 	var num int64 = 20
 	var list = make([]interface{}, num)
-	for i, _ := range list {
+	for i := range list {
 		list[i] = i
 	}
 	// 测试lpushtrim
