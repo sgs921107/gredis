@@ -53,8 +53,6 @@ github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1y
 github.com/onsi/gomega v1.10.4 h1:NiTx7EEvBzu9sFOD1zORteLSt3o8gnlvZZwSE9TnY9U=
 github.com/onsi/gomega v1.10.4/go.mod h1:g/HbgYopi++010VEqkFgJHKC09uJiW9UkXvMUuKHUCQ=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
-github.com/sgs921107/gcommon v0.0.0-20201214023325-f1c7f9815c0b h1:TbHPRrUiQzd58KIOxSwrYt/13C9dduZ46T0GSzSUDU4=
-github.com/sgs921107/gcommon v0.0.0-20201214023325-f1c7f9815c0b/go.mod h1:vA/dFbWmbvb7NJ7Gs+iHjuqa4Sx+O9nUSFp9T7fV/rI=
 github.com/sgs921107/gcommon v0.0.0-20201216112724-e721c87dfb4d h1:UnuwWQoIKfubDvSgoXhFwZozyxhUSbQ+IyfMGL7RAps=
 github.com/sgs921107/gcommon v0.0.0-20201216112724-e721c87dfb4d/go.mod h1:vA/dFbWmbvb7NJ7Gs+iHjuqa4Sx+O9nUSFp9T7fV/rI=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
