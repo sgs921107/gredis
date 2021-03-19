@@ -7,63 +7,66 @@
 
 package gredis
 
-var hsetScript = `
+var hsetexScript = `
     local name = KEYS[1]
-	local expire_time = ARGV[1]
-	local key = ARGV[2]
-	local value = ARGV[3]
-	redis.call("hset", name, key, value)
-	local ret = redis.call("expire", name, expire_time)
-	return ret
+    local expire_time = ARGV[1]
+    local key = ARGV[2]
+    local value = ARGV[3]
+    local ret = redis.call("hset", name, key, value)
+    redis.call("expire", name, expire_time)
+    return ret
 `
 
-var hmsetScript = `
-	local name = KEYS[1]
+var hmsetexScript = `
+    local name = KEYS[1]
     local expire_time = ARGV[1]
-    local index = 2
-    while index < table.getn(ARGV) do
-        redis.call("hset", name, ARGV[index], ARGV[index + 1])
-        index = index + 2
-    end
-	local ret = redis.call("expire", name, expire_time)
+    local unpack = unpack or table.unpack
+    local ret = redis.call("hmset", name, unpack(ARGV, 2))
+    redis.call("expire", name, expire_time)
     return ret
 `
 
 var zaddRemByRankScript = `
-	local name = KEYS[1]
+    local name = KEYS[1]
     local startNum = ARGV[1]
     local stopNum = ARGV[2]
-    local index = 3
-    while index < table.getn(ARGV) do
-        redis.call("zadd", name, ARGV[index], ARGV[index + 1])
-        index = index + 2
-    end
-    local ret = redis.call("zremrangebyrank", name, startNum, stopNum)
+    local unpack = unpack or table.unpack
+    local ret = redis.call("zadd", name, unpack(ARGV, 3))
+    redis.call("zremrangebyrank", name, startNum, stopNum)
     return ret
 `
 
 var lpushTrimScript = `
-	local name = KEYS[1]
+    local name = KEYS[1]
     local startNum = ARGV[1]
     local stopNum = ARGV[2]
-    local index = 3
-    while index <= table.getn(ARGV) do
-        redis.call("lpush", name, ARGV[index])
-        index = index + 1
+    local unpack = unpack or table.unpack
+    local ret = redis.call("lpush", name, unpack(ARGV, 3))
+    if( ret > stopNum + 1 )
+    then
+        redis.call("ltrim", name, startNum, stopNum)
     end
-    local ret = redis.call("ltrim", name, startNum, stopNum)
     return ret
 `
 
 var rpushTrimScript = `
-	local name = KEYS[1]
+    local name = KEYS[1]
     local startNum = ARGV[1]
     local stopNum = ARGV[2]
-    local index = 3
-    while index <= table.getn(ARGV) do
-        redis.call("rpush", name, ARGV[index])
-        index = index + 1
+    local unpack = unpack or table.unpack
+    local ret = redis.call("rpush", name, unpack(ARGV, 3))
+    if( ret > stopNum + 1 )
+    then
+        redis.call("ltrim", name, startNum, stopNum)
     end
-    local ret = redis.call("ltrim", name, startNum, stopNum)
+    return ret
+`
+
+var saddex_script = `
+    local name = KEYS[1]
+    local expire_time = ARGV[1]
+    local unpack = unpack or table.unpack
+    local ret = redis.call("sadd", name, unpack(ARGV, 2))
+    redis.call("expire", name, expire_time)
     return ret
 `

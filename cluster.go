@@ -102,7 +102,7 @@ HSetEX 执行hset命令并设置过期时间 单位: 秒
 func (c *ClusterClient) HSetEX(key, field string, value interface{}, expiration time.Duration) *Cmd {
 	keys := []string{key}
 	ex := gcommon.DurationToIntSecond(expiration)
-	return c.Eval(hsetScript, keys, ex, field, value)
+	return c.Eval(hsetexScript, keys, ex, field, value)
 }
 
 /*
@@ -117,7 +117,7 @@ func (c *ClusterClient) HMSetEX(key string, fields map[string]interface{}, expir
 			args = append(args, k, v)
 		}
 	}
-	return c.Eval(hmsetScript, keys, args...)
+	return c.Eval(hmsetexScript, keys, args...)
 }
 
 /*
