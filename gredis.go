@@ -22,15 +22,21 @@ type (
 	// RedisClient redis client
 	RedisClient = redis.Client
 	// Options  实例化redis client时的参数结构类型
-	Options     = redis.Options
+	Options = redis.Options
 	// BoolCmd bool
-	BoolCmd     = redis.BoolCmd
+	BoolCmd = redis.BoolCmd
 	// Cmd cmd
-	Cmd         = redis.Cmd
+	Cmd = redis.Cmd
 	// Z z
-	Z           = redis.Z
+	Z = redis.Z
 	// ScanCmd  scan cmd
-	ScanCmd     = redis.ScanCmd
+	ScanCmd = redis.ScanCmd
+)
+
+// 起别名
+const (
+	// RedisNil redis nil err
+	RedisNil = redis.Nil
 )
 
 /*
