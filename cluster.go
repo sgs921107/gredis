@@ -155,7 +155,7 @@ func (c *ClusterClient) RPushTrim(key string, length int64, values ...interface{
 /*
 LPushEx 向list左边插入元素并设置过期时间
 */
-func (c *Client) LPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
+func (c *ClusterClient) LPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
 	keys := []string{key}
 	ex := gcommon.DurationToIntSecond(expiration)
 	args := []interface{}{ex}
@@ -166,7 +166,7 @@ func (c *Client) LPushEx(key string, expiration time.Duration, values ...interfa
 /*
 RPushEx 向list左边插入元素并设置过期时间
 */
-func (c *Client) RPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
+func (c *ClusterClient) RPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
 	keys := []string{key}
 	ex := gcommon.DurationToIntSecond(expiration)
 	args := []interface{}{ex}
