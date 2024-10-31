@@ -135,7 +135,7 @@ func (c *Client) HMSetEX(key string, fields map[string]interface{}, expiration t
 }
 
 /*
-ZAddRemByRank 向zset中插入成员并剪切，并截取只保留分数最高的length个成员
+ZAddRemByRank 向zset中插入成员，并截取只保留分数最高的length个成员
 */
 func (c *Client) ZAddRemByRank(key string, length int64, members ...Z) *Cmd {
 	keys := []string{key}
@@ -164,6 +164,28 @@ func (c *Client) RPushTrim(key string, length int64, values ...interface{}) *Cmd
 	args := []interface{}{-length, -1}
 	args = append(args, values...)
 	return c.Eval(rpushTrimScript, keys, args...)
+}
+
+/*
+LPushEx 向list左边插入元素并设置过期时间
+*/
+func (c *Client) LPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
+	keys := []string{key}
+	ex := gcommon.DurationToIntSecond(expiration)
+	args := []interface{}{ex}
+	args = append(args, values...)
+	return c.Eval(lpushex_script, keys, args...)
+}
+
+/*
+RPushEx 向list左边插入元素并设置过期时间
+*/
+func (c *Client) RPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
+	keys := []string{key}
+	ex := gcommon.DurationToIntSecond(expiration)
+	args := []interface{}{ex}
+	args = append(args, values...)
+	return c.Eval(rpushex_script, keys, args...)
 }
 
 /*

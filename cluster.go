@@ -22,7 +22,7 @@ type (
 	// RedisClusterClient redis集群客户端
 	RedisClusterClient = redis.ClusterClient
 	// ClusterOptions  创建集群客户端的参数结构类型
-	ClusterOptions     = redis.ClusterOptions
+	ClusterOptions = redis.ClusterOptions
 )
 
 /*
@@ -150,6 +150,28 @@ func (c *ClusterClient) RPushTrim(key string, length int64, values ...interface{
 	args := []interface{}{-length, -1}
 	args = append(args, values...)
 	return c.Eval(rpushTrimScript, keys, args...)
+}
+
+/*
+LPushEx 向list左边插入元素并设置过期时间
+*/
+func (c *Client) LPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
+	keys := []string{key}
+	ex := gcommon.DurationToIntSecond(expiration)
+	args := []interface{}{ex}
+	args = append(args, values...)
+	return c.Eval(lpushex_script, keys, args...)
+}
+
+/*
+RPushEx 向list左边插入元素并设置过期时间
+*/
+func (c *Client) RPushEx(key string, expiration time.Duration, values ...interface{}) *Cmd {
+	keys := []string{key}
+	ex := gcommon.DurationToIntSecond(expiration)
+	args := []interface{}{ex}
+	args = append(args, values...)
+	return c.Eval(rpushex_script, keys, args...)
 }
 
 /*

@@ -20,27 +20,26 @@ var hsetexScript = `
 var hmsetexScript = `
     local name = KEYS[1]
     local expire_time = ARGV[1]
-    local unpack = unpack or table.unpack
     local ret = redis.call("hmset", name, unpack(ARGV, 2))
     redis.call("expire", name, expire_time)
     return ret
 `
 
+// 向zset中加入元素并只保留指定数量的元素
 var zaddRemByRankScript = `
     local name = KEYS[1]
     local startNum = ARGV[1]
     local stopNum = ARGV[2]
-    local unpack = unpack or table.unpack
     local ret = redis.call("zadd", name, unpack(ARGV, 3))
     redis.call("zremrangebyrank", name, startNum, stopNum)
     return ret
 `
 
+// 从list左边截取若干元素
 var lpushTrimScript = `
     local name = KEYS[1]
     local startNum = ARGV[1]
     local stopNum = ARGV[2]
-    local unpack = unpack or table.unpack
     local ret = redis.call("lpush", name, unpack(ARGV, 3))
     if( ret > stopNum + 1 )
     then
@@ -49,11 +48,11 @@ var lpushTrimScript = `
     return ret
 `
 
+// 从list右边截取若干元素
 var rpushTrimScript = `
     local name = KEYS[1]
     local startNum = ARGV[1]
     local stopNum = ARGV[2]
-    local unpack = unpack or table.unpack
     local ret = redis.call("rpush", name, unpack(ARGV, 3))
     if( ret > stopNum + 1 )
     then
@@ -62,11 +61,29 @@ var rpushTrimScript = `
     return ret
 `
 
+// 向集合中插入数据并设置过期时间
 var saddex_script = `
     local name = KEYS[1]
     local expire_time = ARGV[1]
-    local unpack = unpack or table.unpack
     local ret = redis.call("sadd", name, unpack(ARGV, 2))
     redis.call("expire", name, expire_time)
     return ret
 `
+
+// 从list左端插入数据并设置过期时间
+var lpushex_script = `
+    local name = KEYS[1]
+    local expire_time = ARGV[1]
+    local ret = redis.call("lpush", name, unpack(ARGV, 2))
+    redis.call("expire", name, expire_time)
+    return ret
+    `
+
+// 从list右端插入数据并设置过期时间
+var rpushex_script = `
+    local name = KEYS[1]
+    local expire_time = ARGV[1]
+    local ret = redis.call("rpush", name, unpack(ARGV, 2))
+    redis.call("expire", name, expire_time)
+    return ret
+    `

@@ -8,17 +8,18 @@
 package main
 
 import (
-	"github.com/go-redis/redis"
-	"github.com/sgs921107/gredis"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/go-redis/redis"
+	"github.com/sgs921107/gredis"
 )
 
 var (
 	addr     = "172.17.0.1:6379"
 	db       = 0
-	password = "qaz123"
+	password = "online"
 )
 
 var ex = time.Second * 30
@@ -128,7 +129,7 @@ func TestZAddRemByRank(t *testing.T) {
 }
 
 func TestPushTrim(t *testing.T) {
-	lpushKey := "test_list1"
+	lpushKey := "test_list_lpushtrim"
 	var length int64 = 10
 	var num int64 = 20
 	var list = make([]interface{}, num)
@@ -150,7 +151,7 @@ func TestPushTrim(t *testing.T) {
 	if ret, err := c.LIndex(lpushKey, length-1).Result(); ret != strconv.Itoa(expectRet) {
 		t.Errorf(`c.LIndex("%s").Result() == ("%s", %v), want ("%d", nil)`, lpushKey, ret, err, expectRet)
 	}
-	rpushKey := "test_list2"
+	rpushKey := "test_list_rpushtrim"
 	// 测试rpushtrim
 	if _, err := c.RPushTrim(rpushKey, length, list...).Result(); err != nil {
 		t.Errorf("redis RPushTrim cmd err: %s", err.Error())
@@ -168,4 +169,56 @@ func TestPushTrim(t *testing.T) {
 	}
 	c.Expire(lpushKey, ex)
 	c.Expire(rpushKey, ex)
+}
+
+func TestPushEx(t *testing.T) {
+	lpushKey := "test_list_lpushex"
+	var num int = 20
+	var list = make([]interface{}, num)
+	var expectRetL = make([]string, num)
+	var expectRetR = make([]string, num)
+	for i := range list {
+		list[i] = i
+		expectRetL[num-i-1] = strconv.Itoa(i)
+		expectRetR[i] = strconv.Itoa(i)
+	}
+	c.Del(lpushKey)
+	// 测试lpushex
+	if _, err := c.LPushEx(lpushKey, ex, list...).Result(); err != nil {
+		t.Errorf("redis LPushEx cmd err: %s", err.Error())
+	}
+	if ret, err := c.LRange(lpushKey, 0, -1).Result(); err == nil {
+		for i, val := range ret {
+			if expectRetL[i] != val {
+				t.Errorf(`c.LRange("%s").Result() == ("%v", %v), want ("%v", nil)`, lpushKey, ret, err, expectRetL)
+				break
+			}
+		}
+	} else {
+		t.Errorf("redis LRange cmd err: %s", err.Error())
+	}
+	// 检查过期时间
+	if ttl, err := c.TTL(lpushKey).Result(); ttl == -1 || ttl > ex {
+		t.Errorf(`c.TTL("%s").Result() == (%s, %v) want (uint, nil)`, lpushKey, ttl, err)
+	}
+	// 测试rpushex
+	rpushKey := "test_list_rpushex"
+	c.Del(rpushKey)
+	if _, err := c.RPushEx(rpushKey, ex, list...).Result(); err != nil {
+		t.Errorf("redis RPushEx cmd err: %s", err.Error())
+	}
+	if ret, err := c.LRange(rpushKey, 0, -1).Result(); err == nil {
+		for i, val := range ret {
+			if expectRetR[i] != val {
+				t.Errorf(`c.LRange("%s").Result() == ("%v", %v), want ("%v", nil)`, rpushKey, ret, err, expectRetR)
+				break
+			}
+		}
+	} else {
+		t.Errorf("redis LRange cmd err: %s", err.Error())
+	}
+	// 检查过期时间
+	if ttl, err := c.TTL(rpushKey).Result(); ttl == -1 || ttl > ex {
+		t.Errorf(`c.TTL("%s").Result() == (%s, %v) want (uint, nil)`, rpushKey, ttl, err)
+	}
 }
